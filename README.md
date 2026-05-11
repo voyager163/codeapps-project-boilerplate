@@ -39,13 +39,20 @@ Initialize the Power Apps code app for your target environment:
 pac code init --environment <environmentId> --displayName <appDisplayName>
 ```
 
-Use the OPSX commands in GitHub Copilot to drive changes:
+Use the expanded OPSX workflow in GitHub Copilot to drive changes:
 
 ```text
 /opsx:explore
+/opsx:new
+/opsx:continue
+/opsx:ff
 /opsx:propose
+/opsx:verify
 /opsx:apply
+/opsx:sync
 /opsx:archive
+/opsx:bulk-archive
+/opsx:onboard
 ```
 
 Start local development:
@@ -125,7 +132,7 @@ Deploy: pac CLI
 
 ## OPSX Workflow
 
-Use OpenSpec commands as the normal development path.
+Use the expanded OpenSpec workflow commands as the normal development path. Generated projects include all 11 OPSX prompt files and all 11 matching OpenSpec skill folders by default.
 
 ```text
 /opsx:explore <idea>
@@ -134,10 +141,34 @@ Use OpenSpec commands as the normal development path.
 Think through an idea without implementing. Use this for architecture exploration, problem framing, risks, and tradeoffs.
 
 ```text
+/opsx:new <change>
+```
+
+Start a new change and inspect the first artifact instructions before drafting.
+
+```text
+/opsx:continue <change>
+```
+
+Continue creating or updating artifacts for an active change.
+
+```text
+/opsx:ff <change>
+```
+
+Fast-forward artifact creation until the change is ready for implementation.
+
+```text
 /opsx:propose <change>
 ```
 
 Create a proposal, design, specs, and tasks for a new change.
+
+```text
+/opsx:verify <change>
+```
+
+Check that the change artifacts are complete and internally consistent.
 
 ```text
 /opsx:apply <change>
@@ -146,28 +177,34 @@ Create a proposal, design, specs, and tasks for a new change.
 Implement the tasks from an approved OpenSpec change.
 
 ```text
+/opsx:sync <change>
+```
+
+Sync completed change artifacts back into the canonical specs when appropriate.
+
+```text
 /opsx:archive <change>
 ```
 
 Archive a completed change and sync the final specs.
 
-The expanded workflow files are also included:
-
 ```text
-/opsx:new
-/opsx:continue
-/opsx:ff
-/opsx:verify
-/opsx:sync
-/opsx:onboard
 /opsx:bulk-archive
 ```
+
+Archive multiple completed changes when the workspace has accumulated finished work.
+
+```text
+/opsx:onboard
+```
+
+Inspect the project and generate onboarding context for the assistant.
 
 ## Development Guidelines For Generated Apps
 
 Follow these rules when building Code Apps from the generated project.
 
-- Start meaningful work with `/opsx:explore` or `/opsx:propose` before implementation.
+- Start meaningful work with `/opsx:explore`, `/opsx:new`, `/opsx:ff`, or `/opsx:propose` before implementation.
 - Keep requirements in OpenSpec artifacts, not only in chat history.
 - Use Power Platform connectors for runtime data access.
 - Do not add a custom backend unless the OpenSpec change explicitly justifies it.
