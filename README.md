@@ -115,7 +115,7 @@ OpenSpec is the current framework choice, not an irreversible constraint. CodeSp
 
 A generated CodeSpec app includes:
 
-- a Vite, React 18, and TypeScript Code Apps starter;
+- a Vite, React 19, and TypeScript Code Apps starter;
 - Tailwind CSS, shadcn/ui components, theming, and Lucide icons;
 - React Router, TanStack Query, TanStack Table, and Zustand;
 - an OpenSpec configuration tailored for Power Apps Code Apps;
@@ -184,7 +184,7 @@ The generated `openspec/config.yaml` is tailored for Power Apps Code Apps:
 
 ```text
 Platform: Power Apps Code Apps
-Frontend: Vite + React 18 TypeScript
+Frontend: Vite + React 19 TypeScript
 Styling: Tailwind CSS
 Routing: React Router
 Data: TanStack Query + Power Platform connectors
@@ -325,7 +325,8 @@ The script creates a temporary generated project and checks that:
 - OpenSpec initializes successfully;
 - all 11 OPSX prompt files are present;
 - all 11 OpenSpec skill folders are present;
-- `openspec/config.yaml` matches the fixed Power Apps Code Apps config.
+- `openspec/config.yaml` matches the fixed Power Apps Code Apps config;
+- generated project tooling includes React 19 guidance, Vitest, Playwright, Prettier, and Power Apps telemetry scaffolding.
 
 Before publishing or handing off a change, also run:
 
@@ -333,6 +334,19 @@ Before publishing or handing off a change, also run:
 node --check bin/create-codespec.js
 node --check scripts/verify-generated-project.js
 npm pack --dry-run
+```
+
+For starter template changes, also validate the starter itself:
+
+```bash
+cd templates/starter
+npm install --no-package-lock
+npm run build
+npm run lint
+npm run test:run
+npm run format:check
+npx playwright install
+npm run e2e
 ```
 
 For documentation or community-file changes, also review:

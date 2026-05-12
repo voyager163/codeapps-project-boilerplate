@@ -5,7 +5,7 @@ import { useTheme } from "@/hooks/use-theme"
 type SonnerProviderProps = { children: React.ReactNode }
 
 export function SonnerProvider({ children }: SonnerProviderProps) {
-  const { theme } = useTheme();
+  const { theme } = useTheme()
 
   return (
     <>

@@ -2,7 +2,7 @@ schema: spec-driven
 
 context: |
   Platform:   Power Apps Code Apps (runs natively inside Power Apps)
-  Frontend:   Vite + React 18 (TypeScript)
+  Frontend:   Vite + React 19 (TypeScript)
   Styling:    Tailwind CSS
   Routing:    React Router
   Data:       TanStack Query + Power Platform connectors (no custom backend)

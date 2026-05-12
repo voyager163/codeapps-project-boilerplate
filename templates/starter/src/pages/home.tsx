@@ -12,9 +12,12 @@ export default function HomePage() {
   return (
     <div className="h-full grid place-items-center">
       <div className="w-full max-w-7xl px-8 text-center flex flex-col items-center space-y-6">
-
         <div className="flex items-center justify-center space-x-8">
-          <a href="https://github.com/microsoft/PowerAppsCodeApps" target="_blank" rel="noreferrer noopener">
+          <a
+            href="https://github.com/microsoft/PowerAppsCodeApps"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             <img
               src={powerAppsLogo}
               className="h-24 w-24 transition-transform hover:scale-105"
@@ -38,13 +41,17 @@ export default function HomePage() {
               count is {count}
             </Button>
             <p className="text-sm text-muted-foreground">
-              Edit <code className="text-foreground">src/App.tsx</code> and save to test HMR
+              Edit <code className="text-foreground">src/App.tsx</code> and save
+              to test HMR
             </p>
           </CardContent>
         </Card>
 
         <div className="flex items-center justify-center gap-4">
-          <Button variant="outline" onClick={() => toast.info("Hello from Power Apps!")}>
+          <Button
+            variant="outline"
+            onClick={() => toast.info("Hello from Power Apps!")}
+          >
             !
           </Button>
           <ModeToggle />

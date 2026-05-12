@@ -9,18 +9,16 @@ const queryClient = new QueryClient({
       retry: false,
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 min
-      gcTime: 10 * 60 * 1000 // 10 min
+      gcTime: 10 * 60 * 1000, // 10 min
     },
     mutations: {
-      retry: false
-    }
+      retry: false,
+    },
   },
-});
+})
 
 export function QueryProvider({ children }: QueryProviderProps) {
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   )
 }

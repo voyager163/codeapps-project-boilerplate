@@ -17,6 +17,14 @@ try {
   assertFile(path.join(projectPath, 'openspec', 'config.yaml'));
   assertDirectory(path.join(projectPath, '.github', 'prompts'));
   assertDirectory(path.join(projectPath, '.github', 'skills'));
+  assertFile(path.join(projectPath, 'playwright.config.ts'));
+  assertFile(path.join(projectPath, 'prettier.config.js'));
+  assertFile(path.join(projectPath, '.prettierignore'));
+  assertFile(path.join(projectPath, 'src', 'test', 'setup.ts'));
+  assertFile(path.join(projectPath, 'src', 'App.test.tsx'));
+  assertFile(path.join(projectPath, 'src', 'telemetry', 'app-telemetry.ts'));
+  assertFile(path.join(projectPath, 'src', 'telemetry', 'app-telemetry.test.ts'));
+  assertFile(path.join(projectPath, 'e2e', 'home.spec.ts'));
 
   const promptCount = countFiles(path.join(projectPath, '.github', 'prompts'));
   const skillCount = countDirectories(path.join(projectPath, '.github', 'skills'));
@@ -35,6 +43,29 @@ try {
   if (actualConfig !== expectedConfig) {
     throw new Error('Generated openspec/config.yaml does not match the fixed template config.');
   }
+
+  if (!actualConfig.includes('Vite + React 19 (TypeScript)')) {
+    throw new Error('Generated openspec/config.yaml does not describe React 19.');
+  }
+
+  const generatedPackage = readJson(path.join(projectPath, 'package.json'));
+
+  assertPackageScript(generatedPackage, 'lint');
+  assertPackageScript(generatedPackage, 'test');
+  assertPackageScript(generatedPackage, 'test:run');
+  assertPackageScript(generatedPackage, 'e2e');
+  assertPackageScript(generatedPackage, 'format');
+  assertPackageScript(generatedPackage, 'format:check');
+
+  assertPackageDependency(generatedPackage, 'dependencies', 'react', /^\^19\./);
+  assertPackageDependency(generatedPackage, 'dependencies', 'react-dom', /^\^19\./);
+  assertPackageDependency(generatedPackage, 'devDependencies', 'vitest');
+  assertPackageDependency(generatedPackage, 'devDependencies', 'jsdom');
+  assertPackageDependency(generatedPackage, 'devDependencies', '@testing-library/react');
+  assertPackageDependency(generatedPackage, 'devDependencies', '@testing-library/jest-dom');
+  assertPackageDependency(generatedPackage, 'devDependencies', '@testing-library/user-event');
+  assertPackageDependency(generatedPackage, 'devDependencies', '@playwright/test');
+  assertPackageDependency(generatedPackage, 'devDependencies', 'prettier');
 
   console.log('Generated project verification passed.');
 } finally {
@@ -66,6 +97,28 @@ function assertFile(filePath) {
 function assertDirectory(directoryPath) {
   if (!fs.existsSync(directoryPath) || !fs.statSync(directoryPath).isDirectory()) {
     throw new Error(`Expected directory missing: ${directoryPath}`);
+  }
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function assertPackageScript(packageJson, scriptName) {
+  if (!packageJson.scripts || !packageJson.scripts[scriptName]) {
+    throw new Error(`Expected package script missing: ${scriptName}`);
+  }
+}
+
+function assertPackageDependency(packageJson, section, dependencyName, versionPattern) {
+  const version = packageJson[section]?.[dependencyName];
+
+  if (!version) {
+    throw new Error(`Expected package ${section} missing: ${dependencyName}`);
+  }
+
+  if (versionPattern && !versionPattern.test(version)) {
+    throw new Error(`Expected package ${dependencyName} version to match ${versionPattern}, found ${version}`);
   }
 }
 
