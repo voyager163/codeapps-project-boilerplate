@@ -119,9 +119,12 @@ A generated CodeSpec app includes:
 - Tailwind CSS, shadcn/ui components, theming, and Lucide icons;
 - React Router, TanStack Query, TanStack Table, and Zustand;
 - an OpenSpec configuration tailored for Power Apps Code Apps;
+- GitHub Actions workflows for GHAS CodeQL, Dependency Review, quality checks, coverage, Semgrep OSS, npm audit, and OpenSSF Scorecard;
 - all OPSX prompt files for GitHub Copilot under `.github/prompts/`;
 - matching OpenSpec skill folders under `.github/skills/`;
 - project-local guidance for exploration, proposal, implementation, verification, syncing, and archiving.
+
+One repo setting must be enabled manually: go to Settings > Code security and turn on Secret Scanning and Push Protection. These are GHAS features but have no workflow file; GitHub runs them natively on every push.
 
 ## Prerequisites
 
@@ -174,6 +177,9 @@ my-app/
 		changes/
 		specs/
 	.github/
+		workflows/
+			ghas.yml
+			quality.yml
 		prompts/
 			opsx-*.prompt.md
 		skills/
@@ -293,7 +299,7 @@ cp -R .github/prompts/. templates/github/prompts/
 cp -R .github/skills/. templates/github/skills/
 ```
 
-Generated projects should include all 11 OPSX prompt files and all 11 OpenSpec skill folders.
+Generated projects should include `ghas.yml` and `quality.yml` workflow files, all 11 OPSX prompt files, and all 11 OpenSpec skill folders.
 
 ## Updating OpenSpec
 
@@ -323,6 +329,7 @@ The script creates a temporary generated project and checks that:
 
 - the starter files are copied;
 - OpenSpec initializes successfully;
+- generated GHAS and quality workflow files are present;
 - all 11 OPSX prompt files are present;
 - all 11 OpenSpec skill folders are present;
 - `openspec/config.yaml` matches the fixed Power Apps Code Apps config;
