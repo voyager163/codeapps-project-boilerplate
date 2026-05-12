@@ -1,5 +1,5 @@
 <div align="center">
-	<img src="./media/logo.svg" alt="CodeSpec logo" width="160" height="160" />
+	<img src="https://raw.githubusercontent.com/voyager163/codespec/main/media/logo.svg" alt="CodeSpec logo" width="160" height="160" />
 	<h1>CodeSpec</h1>
 	<h3><em>Spec-driven development for Power Apps Code Apps.</em></h3>
 </div>
