@@ -1,9 +1,9 @@
-# create-codeapps-openspec
+# create-codespec
 
 Create a Power Apps Code Apps project that is ready for OpenSpec-driven development.
 
 ```bash
-npx create-codeapps-openspec my-app
+npx create-codespec my-app
 ```
 
 This package is an opinionated initializer. It creates a project from this repo's customized Code Apps starter template, adds the OpenSpec OPSX prompt and skill files, initializes OpenSpec, applies the Power Apps Code Apps OpenSpec configuration, installs dependencies, initializes git, and prints the next steps.
@@ -28,7 +28,7 @@ OpenSpec keeps the work lightweight:
 ## Quick Start
 
 ```bash
-npx create-codeapps-openspec my-app
+npx create-codespec my-app
 cd my-app
 code .
 ```
@@ -217,8 +217,8 @@ Follow these rules when building Code Apps from the generated project.
 ## CLI Options
 
 ```bash
-npx create-codeapps-openspec my-app --skip-install
-npx create-codeapps-openspec my-app --skip-git
+npx create-codespec my-app --skip-install
+npx create-codespec my-app --skip-git
 ```
 
 By default, `npm install` and `git init` both run automatically.
@@ -230,9 +230,9 @@ The CLI fails if the target folder already exists. This avoids accidental overwr
 This repository contains both the initializer and the templates it copies.
 
 ```text
-codeapps-project-boilerplate/
+codespec/
 	bin/
-		create-codeapps-openspec.js
+		create-codespec.js
 	templates/
 		starter/
 			SOURCE.md
@@ -314,7 +314,7 @@ The script creates a temporary generated project and checks that:
 Before publishing or handing off a change, also run:
 
 ```bash
-node --check bin/create-codeapps-openspec.js
+node --check bin/create-codespec.js
 node --check scripts/verify-generated-project.js
 npm pack --dry-run
 ```

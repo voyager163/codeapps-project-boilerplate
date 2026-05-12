@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const readline = require('node:readline');
 
-const packageName = 'create-codeapps-openspec';
+const packageName = 'create-codespec';
 const minNodeVersion = [20, 19, 0];
 const openspecPackage = '@fission-ai/openspec@latest';
 
@@ -206,7 +206,7 @@ function normalizePackageName(projectName) {
     .replace(/[._-]+$/, '')
     .replace(/-{2,}/g, '-');
 
-  return normalized || 'codeapps-app';
+  return normalized || 'codespec-app';
 }
 
 function copyGithubOverlay(templateRoot, targetPath) {

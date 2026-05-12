@@ -1,8 +1,4 @@
-## Purpose
-
-Define the behavior of the `create-codeapps-openspec` initializer for creating Power Apps Code Apps projects prepared for OpenSpec-driven development.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Project Name Handling
 
@@ -10,14 +6,14 @@ The initializer SHALL accept an optional project folder name as a positional arg
 
 #### Scenario: Project name is provided
 
-Given the developer runs `npx create-codeapps-openspec my-app`
+Given the developer runs `npx create-codespec my-app`
 When the initializer starts
 Then it SHALL use `my-app` as the target folder name
 And it SHALL not prompt for the project name.
 
 #### Scenario: Project name is omitted
 
-Given the developer runs `npx create-codeapps-openspec`
+Given the developer runs `npx create-codespec`
 When the initializer starts
 Then it SHALL prompt the developer for a project name
 And it SHALL use the provided value as the target folder name.
@@ -54,7 +50,7 @@ The initializer SHALL avoid overwriting an existing target folder by default.
 #### Scenario: Target folder already exists
 
 Given a folder named `my-app` already exists
-When the developer runs `npx create-codeapps-openspec my-app`
+When the developer runs `npx create-codespec my-app`
 Then the initializer SHALL stop before copying files
 And it SHALL explain that the target folder already exists.
 

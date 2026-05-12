@@ -6,7 +6,7 @@ This change creates an `npx`-driven initializer that copies this repo's customiz
 
 ## What Changes
 
-- Add an npm CLI package entry point that can be run with `npx create-codeapps-openspec <project-name>`.
+- Add an npm CLI package entry point that can be run with `npx create-codespec <project-name>`.
 - Prompt for the project name when omitted.
 - Check required developer tooling: Node.js, npm, git, and OpenSpec.
 - Automatically install OpenSpec for the developer when it is missing.
@@ -26,7 +26,7 @@ Affected teams: developers creating Power Apps Code Apps projects, maintainers o
 
 ### New Capabilities
 
-- `codeapps-openspec-initializer`: Defines the npm initializer behavior, generated project contents, OpenSpec setup, fixed configuration application, and setup output.
+- `codespec-initializer`: Defines the npm initializer behavior, generated project contents, OpenSpec setup, fixed configuration application, and setup output.
 
 ### Modified Capabilities
 

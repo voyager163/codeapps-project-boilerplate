@@ -1,10 +1,10 @@
 {
-  "name": "create-codeapps-openspec",
+  "name": "create-codespec",
   "version": "0.1.0",
   "description": "Create a Power Apps Code Apps project prepared for OpenSpec workflows.",
   "license": "MIT",
   "bin": {
-    "create-codeapps-openspec": "bin/create-codeapps-openspec.js"
+    "create-codespec": "bin/create-codespec.js"
   },
   "files": [
     "bin/",

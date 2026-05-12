@@ -6,12 +6,12 @@ const os = require('node:os');
 const path = require('node:path');
 
 const repoRoot = path.resolve(__dirname, '..');
-const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'codeapps-openspec-'));
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'codespec-'));
 const projectName = 'verify-app';
 const projectPath = path.join(tempRoot, projectName);
 
 try {
-  run('node', [path.join(repoRoot, 'bin', 'create-codeapps-openspec.js'), projectName, '--skip-install', '--skip-git'], tempRoot);
+  run('node', [path.join(repoRoot, 'bin', 'create-codespec.js'), projectName, '--skip-install', '--skip-git'], tempRoot);
 
   assertFile(path.join(projectPath, 'package.json'));
   assertFile(path.join(projectPath, 'openspec', 'config.yaml'));

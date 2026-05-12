@@ -1,7 +1,7 @@
 ## 1. Package And Template Structure
 
-- [x] 1.1 Add npm package metadata for `create-codeapps-openspec`, including a `bin` entry for the initializer.
-- [x] 1.2 Add `bin/create-codeapps-openspec.js` as the CLI entry point.
+- [x] 1.1 Add npm package metadata for `create-codespec`, including a `bin` entry for the initializer.
+- [x] 1.2 Add `bin/create-codespec.js` as the CLI entry point.
 - [x] 1.3 Add `templates/starter/` containing the customized starter snapshot and a `SOURCE.md` documenting the Microsoft starter source.
 - [x] 1.4 Add `templates/openspec/config.yaml` with the fixed Power Apps Code Apps OpenSpec configuration.
 - [x] 1.5 Add `templates/github/` containing all 11 OPSX prompts and all 11 matching OpenSpec skill folders for generated projects.

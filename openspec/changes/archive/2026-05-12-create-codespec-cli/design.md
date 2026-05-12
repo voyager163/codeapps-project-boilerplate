@@ -6,7 +6,7 @@ The starter template will be synced once from `microsoft/PowerAppsCodeApps/templ
 
 ## Goals
 
-- Provide an `npx`-friendly initializer named `create-codeapps-openspec`.
+- Provide an `npx`-friendly initializer named `create-codespec`.
 - Create a ready-to-use project folder from this repo's customized starter template.
 - Include all 11 OPSX prompt files and all 11 matching OpenSpec skill folders in generated projects.
 - Automatically install OpenSpec when it is missing from the developer machine.
@@ -30,7 +30,7 @@ The starter template will be synced once from `microsoft/PowerAppsCodeApps/templ
 Expose a package/bin that supports:
 
 ```bash
-npx create-codeapps-openspec my-app
+npx create-codespec my-app
 ```
 
 If `my-app` is omitted, prompt for the project name. The folder name should also be used as the default package name, normalized for npm package naming rules.
@@ -40,10 +40,10 @@ If `my-app` is omitted, prompt for the project name. The folder name should also
 Use this layout for implementation:
 
 ```text
-codeapps-project-boilerplate/
+codespec/
   package.json
   bin/
-    create-codeapps-openspec.js
+    create-codespec.js
   templates/
     starter/
       SOURCE.md
