@@ -1,29 +1,53 @@
-# create-codespec
+<div align="center">
+	<img src="./media/logo.svg" alt="CodeSpec logo" width="160" height="160" />
+	<h1>CodeSpec</h1>
+	<h3><em>Spec-driven development for Power Apps Code Apps.</em></h3>
+</div>
 
-Create a Power Apps Code Apps project that is ready for OpenSpec-driven development.
+<p align="center">
+	<strong>Create Code Apps projects with OpenSpec, GitHub Copilot workflows, and reviewable requirements from the first commit.</strong>
+</p>
 
-```bash
-npx create-codespec my-app
-```
+<p align="center">
+	<a href="https://github.com/voyager163/codespec/releases/latest">
+		<img src="https://img.shields.io/github/v/release/voyager163/codespec?label=release" alt="Latest release" />
+	</a>
+	<a href="https://github.com/voyager163/codespec/stargazers">
+		<img src="https://img.shields.io/github/stars/voyager163/codespec?style=social" alt="GitHub stars" />
+	</a>
+	<a href="https://github.com/voyager163/codespec/blob/main/LICENSE">
+		<img src="https://img.shields.io/github/license/voyager163/codespec" alt="License" />
+	</a>
+	<a href="https://www.npmjs.com/package/create-codespec">
+		<img src="https://img.shields.io/npm/v/create-codespec?label=npm" alt="npm version" />
+	</a>
+</p>
 
-This package is an opinionated initializer. It creates a project from this repo's customized Code Apps starter template, adds the OpenSpec OPSX prompt and skill files, initializes OpenSpec, applies the Power Apps Code Apps OpenSpec configuration, installs dependencies, initializes git, and prints the next steps.
+---
 
-## Philosophy
+CodeSpec is an open source initializer for teams building [Power Apps Code Apps](https://learn.microsoft.com/power-apps/developer/code-apps/overview). It combines a customized Code Apps starter, OpenSpec project artifacts, and GitHub Copilot prompt and skill files so app development can move from idea to reviewed requirements to implementation without losing decisions in chat history.
 
-This starter is for teams that want AI-assisted development to be grounded in clear specs instead of long chat history.
+The goal is practical spec-driven development for Code Apps. CodeSpec uses OpenSpec today because it is lightweight, file-based, and easy to learn. If a better spec-driven development framework emerges, CodeSpec should be able to adopt it while preserving the same developer experience.
 
-The workflow is:
+## Table Of Contents
 
-```text
-Explore the idea -> propose the change -> generate specs/design/tasks -> implement -> archive
-```
-
-OpenSpec keeps the work lightweight:
-
-- Fluid, not rigid.
-- Iterative, not waterfall.
-- Easy to start, but organized enough for real projects.
-- Built around project files that can be reviewed, updated, and archived.
+- [Quick Start](#quick-start)
+- [Who CodeSpec Is For](#who-codespec-is-for)
+- [Why Spec-Driven Development](#why-spec-driven-development)
+- [What You Get](#what-you-get)
+- [Prerequisites](#prerequisites)
+- [What The CLI Does](#what-the-cli-does)
+- [Generated Project](#generated-project)
+- [OPSX Workflow](#opsx-workflow)
+- [Development Guidelines For Generated Apps](#development-guidelines-for-generated-apps)
+- [CLI Options](#cli-options)
+- [Contributing](#contributing)
+- [Repository Layout](#repository-layout)
+- [Maintaining The Starter](#maintaining-the-starter)
+- [Maintaining OpenSpec Assets](#maintaining-openspec-assets)
+- [Verification](#verification)
+- [Publishing Checklist](#publishing-checklist)
+- [License](#license)
 
 ## Quick Start
 
@@ -60,6 +84,44 @@ Start local development:
 ```bash
 npm run dev
 ```
+
+## Who CodeSpec Is For
+
+CodeSpec is for developers and teams who want to build Power Apps Code Apps with a repeatable, reviewable workflow:
+
+- makers and developers starting a new Code Apps project;
+- teams using GitHub Copilot for implementation but wanting durable requirements;
+- maintainers who want app behavior captured in repository files rather than scattered chat transcripts;
+- organizations evaluating spec-driven development for Power Platform work.
+
+## Why Spec-Driven Development
+
+AI-assisted development works best when the project keeps its intent close to the code. CodeSpec encourages a loop where ideas become files that can be reviewed, changed, implemented, verified, and archived.
+
+```text
+Explore the idea -> propose the change -> generate specs/design/tasks -> implement -> archive
+```
+
+OpenSpec keeps that loop lightweight:
+
+- Fluid, not rigid.
+- Iterative, not waterfall.
+- Easy to start, but organized enough for real projects.
+- Built around project files that can be reviewed, updated, and archived.
+
+OpenSpec is the current framework choice, not an irreversible constraint. CodeSpec is about making spec-driven development practical for Code Apps; the framework can evolve if the ecosystem gives the project a better fit.
+
+## What You Get
+
+A generated CodeSpec app includes:
+
+- a Vite, React 18, and TypeScript Code Apps starter;
+- Tailwind CSS, shadcn/ui components, theming, and Lucide icons;
+- React Router, TanStack Query, TanStack Table, and Zustand;
+- an OpenSpec configuration tailored for Power Apps Code Apps;
+- all OPSX prompt files for GitHub Copilot under `.github/prompts/`;
+- matching OpenSpec skill folders under `.github/skills/`;
+- project-local guidance for exploration, proposal, implementation, verification, syncing, and archiving.
 
 ## Prerequisites
 
@@ -134,71 +196,19 @@ Deploy: pac CLI
 
 Use the expanded OpenSpec workflow commands as the normal development path. Generated projects include all 11 OPSX prompt files and all 11 matching OpenSpec skill folders by default.
 
-```text
-/opsx:explore <idea>
-```
-
-Think through an idea without implementing. Use this for architecture exploration, problem framing, risks, and tradeoffs.
-
-```text
-/opsx:new <change>
-```
-
-Start a new change and inspect the first artifact instructions before drafting.
-
-```text
-/opsx:continue <change>
-```
-
-Continue creating or updating artifacts for an active change.
-
-```text
-/opsx:ff <change>
-```
-
-Fast-forward artifact creation until the change is ready for implementation.
-
-```text
-/opsx:propose <change>
-```
-
-Create a proposal, design, specs, and tasks for a new change.
-
-```text
-/opsx:verify <change>
-```
-
-Check that the change artifacts are complete and internally consistent.
-
-```text
-/opsx:apply <change>
-```
-
-Implement the tasks from an approved OpenSpec change.
-
-```text
-/opsx:sync <change>
-```
-
-Sync completed change artifacts back into the canonical specs when appropriate.
-
-```text
-/opsx:archive <change>
-```
-
-Archive a completed change and sync the final specs.
-
-```text
-/opsx:bulk-archive
-```
-
-Archive multiple completed changes when the workspace has accumulated finished work.
-
-```text
-/opsx:onboard
-```
-
-Inspect the project and generate onboarding context for the assistant.
+| Command | Purpose |
+| --- | --- |
+| `/opsx:explore <idea>` | Think through an idea without implementing. Use this for architecture exploration, problem framing, risks, and tradeoffs. |
+| `/opsx:new <change>` | Start a new change and inspect the first artifact instructions before drafting. |
+| `/opsx:continue <change>` | Continue creating or updating artifacts for an active change. |
+| `/opsx:ff <change>` | Fast-forward artifact creation until the change is ready for implementation. |
+| `/opsx:propose <change>` | Create a proposal, design, specs, and tasks for a new change. |
+| `/opsx:verify <change>` | Check that the change artifacts are complete and internally consistent. |
+| `/opsx:apply <change>` | Implement the tasks from an approved OpenSpec change. |
+| `/opsx:sync <change>` | Sync completed change artifacts back into the canonical specs when appropriate. |
+| `/opsx:archive <change>` | Archive a completed change and sync the final specs. |
+| `/opsx:bulk-archive` | Archive multiple completed changes when the workspace has accumulated finished work. |
+| `/opsx:onboard` | Inspect the project and generate onboarding context for the assistant. |
 
 ## Development Guidelines For Generated Apps
 
@@ -224,6 +234,12 @@ npx create-codespec my-app --skip-git
 By default, `npm install` and `git init` both run automatically.
 
 The CLI fails if the target folder already exists. This avoids accidental overwrites.
+
+## Contributing
+
+CodeSpec is open source. Contributions are welcome around the starter template, OPSX workflow, OpenSpec configuration, verification coverage, docs, and future spec-driven development framework evaluation.
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. By participating in this project, you also agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Repository Layout
 
@@ -319,6 +335,14 @@ node --check scripts/verify-generated-project.js
 npm pack --dry-run
 ```
 
+For documentation or community-file changes, also review:
+
+- README badge links and image paths;
+- accessible alt text for media assets;
+- links to [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [LICENSE](LICENSE);
+- CodeSpec project identity terms;
+- Power Apps Code Apps, `pac code init`, and `microsoft/PowerAppsCodeApps` references.
+
 ## Publishing Checklist
 
 Before publishing a package version:
@@ -328,6 +352,7 @@ Before publishing a package version:
 3. Confirm `templates/starter` contains no local secrets or generated build output.
 4. Confirm [templates/openspec/config.yaml](templates/openspec/config.yaml) has the desired Power Apps Code Apps defaults.
 5. Confirm [templates/github](templates/github) contains exactly the expected OPSX prompts and skills.
+6. Confirm README badges, community links, and media assets render correctly.
 
 ## License
 

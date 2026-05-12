@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc" viewBox="0 0 256 256">
+  <title id="title">CodeSpec logo</title>
+  <desc id="desc">A document with code brackets and a check mark, representing spec-driven Code Apps development.</desc>
+  <defs>
+    <linearGradient id="paper" x1="48" y1="24" x2="208" y2="232" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fafc" />
+      <stop offset="1" stop-color="#e0f2fe" />
+    </linearGradient>
+    <linearGradient id="accent" x1="72" y1="48" x2="190" y2="206" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563eb" />
+      <stop offset="1" stop-color="#16a34a" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#0f172a" />
+  <path d="M72 32h80l40 40v136a16 16 0 0 1-16 16H72a16 16 0 0 1-16-16V48a16 16 0 0 1 16-16Z" fill="url(#paper)" />
+  <path d="M152 32v40h40" fill="#bfdbfe" />
+  <path d="M98 96 72 122l26 26" fill="none" stroke="#2563eb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M134 96 160 122l-26 26" fill="none" stroke="#2563eb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M90 178h36" fill="none" stroke="#64748b" stroke-width="10" stroke-linecap="round" />
+  <path d="M142 178 158 194 190 158" fill="none" stroke="url(#accent)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
