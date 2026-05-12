@@ -1,25 +1,27 @@
 ## Purpose
 
-Define the behavior of the `create-codespec` initializer for creating Power Apps Code Apps projects prepared for OpenSpec-driven development.
+Define the behavior of the CodeSpec initializer for creating Power Apps Code Apps projects prepared for OpenSpec-driven development.
 
 ## Requirements
 
 ### Requirement: CodeSpec CLI Identity
 
-The initializer SHALL use `codespec` as the project identity and SHALL expose the npm package and executable command as `create-codespec`.
+The initializer SHALL use `codespec` as the project identity, SHALL publish the npm package as `@voyager163/codespec`, and SHALL expose `codespec` as the primary executable command.
 
 #### Scenario: Package metadata names CodeSpec initializer
 
 Given a developer inspects the package metadata
 When the package name and binary entries are read
-Then they SHALL identify the initializer as `create-codespec`
-And they SHALL NOT expose a legacy package name or bin alias.
+Then the package name SHALL identify the initializer as `@voyager163/codespec`
+And the binary entries SHALL expose `codespec` as the primary command
+And they MAY expose `create-codespec` as a backwards-compatible bin alias.
 
 #### Scenario: Help output shows CodeSpec command
 
 Given the developer runs the initializer help command
 When usage information is printed
-Then it SHALL show `npx create-codespec [project-name] [options]`.
+Then it SHALL show `codespec [project-name] [options]`
+And it SHALL mention `npm install -g @voyager163/codespec@latest` as the global install command.
 
 ### Requirement: CodeSpec Documentation Identity
 
@@ -50,14 +52,14 @@ The initializer SHALL accept an optional project folder name as a positional arg
 
 #### Scenario: Project name is provided
 
-Given the developer runs `npx create-codespec my-app`
+Given the developer runs `codespec my-app`
 When the initializer starts
 Then it SHALL use `my-app` as the target folder name
 And it SHALL not prompt for the project name.
 
 #### Scenario: Project name is omitted
 
-Given the developer runs `npx create-codespec`
+Given the developer runs `codespec`
 When the initializer starts
 Then it SHALL prompt the developer for a project name
 And it SHALL use the provided value as the target folder name.
@@ -94,7 +96,7 @@ The initializer SHALL avoid overwriting an existing target folder by default.
 #### Scenario: Target folder already exists
 
 Given a folder named `my-app` already exists
-When the developer runs `npx create-codespec my-app`
+When the developer runs `codespec my-app`
 Then the initializer SHALL stop before copying files
 And it SHALL explain that the target folder already exists.
 

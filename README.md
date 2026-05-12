@@ -18,8 +18,8 @@
 	<a href="https://github.com/voyager163/codespec/blob/main/LICENSE">
 		<img src="https://img.shields.io/github/license/voyager163/codespec" alt="License" />
 	</a>
-	<a href="https://www.npmjs.com/package/create-codespec">
-		<img src="https://img.shields.io/npm/v/create-codespec?label=npm" alt="npm version" />
+	<a href="https://www.npmjs.com/package/@voyager163/codespec">
+		<img src="https://img.shields.io/npm/v/%40voyager163%2Fcodespec?label=npm" alt="npm version" />
 	</a>
 </p>
 
@@ -52,9 +52,16 @@ The goal is practical spec-driven development for Code Apps. CodeSpec uses OpenS
 ## Quick Start
 
 ```bash
-npx create-codespec my-app
+npm install -g @voyager163/codespec@latest
+codespec my-app
 cd my-app
 code .
+```
+
+To create a project without a global install, run:
+
+```bash
+npx @voyager163/codespec my-app
 ```
 
 Initialize the Power Apps code app for your target environment:
@@ -233,8 +240,8 @@ Follow these rules when building Code Apps from the generated project.
 ## CLI Options
 
 ```bash
-npx create-codespec my-app --skip-install
-npx create-codespec my-app --skip-git
+codespec my-app --skip-install
+codespec my-app --skip-git
 ```
 
 By default, `npm install` and `git init` both run automatically.
@@ -370,10 +377,11 @@ Before publishing a package version:
 
 1. Run `npm run verify`.
 2. Run `npm pack --dry-run` and inspect the included files.
-3. Confirm `templates/starter` contains no local secrets or generated build output.
-4. Confirm [templates/openspec/config.yaml](templates/openspec/config.yaml) has the desired Power Apps Code Apps defaults.
-5. Confirm [templates/github](templates/github) contains exactly the expected OPSX prompts and skills.
-6. Confirm README badges, community links, and media assets render correctly.
+3. Confirm `npm install -g @voyager163/codespec@latest` installs the `codespec` command after publishing.
+4. Confirm `templates/starter` contains no local secrets or generated build output.
+5. Confirm [templates/openspec/config.yaml](templates/openspec/config.yaml) has the desired Power Apps Code Apps defaults.
+6. Confirm [templates/github](templates/github) contains exactly the expected OPSX prompts and skills.
+7. Confirm README badges, community links, and media assets render correctly.
 
 ## License
 
