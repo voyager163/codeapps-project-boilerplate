@@ -17,9 +17,12 @@ try {
   assertFile(path.join(projectPath, 'openspec', 'config.yaml'));
   assertDirectory(path.join(projectPath, '.github', 'prompts'));
   assertDirectory(path.join(projectPath, '.github', 'skills'));
+  assertFile(path.join(projectPath, '.github', 'workflows', 'ghas.yml'));
+  assertFile(path.join(projectPath, '.github', 'workflows', 'quality.yml'));
   assertFile(path.join(projectPath, 'playwright.config.ts'));
   assertFile(path.join(projectPath, 'prettier.config.js'));
   assertFile(path.join(projectPath, '.prettierignore'));
+  assertFile(path.join(projectPath, 'scripts', 'check-changed-file-coverage.js'));
   assertFile(path.join(projectPath, 'src', 'test', 'setup.ts'));
   assertFile(path.join(projectPath, 'src', 'App.test.tsx'));
   assertFile(path.join(projectPath, 'src', 'telemetry', 'app-telemetry.ts'));
@@ -53,9 +56,15 @@ try {
   assertPackageScript(generatedPackage, 'lint');
   assertPackageScript(generatedPackage, 'test');
   assertPackageScript(generatedPackage, 'test:run');
+  assertPackageScript(generatedPackage, 'test:coverage');
+  assertPackageScript(generatedPackage, 'coverage:changed');
   assertPackageScript(generatedPackage, 'e2e');
   assertPackageScript(generatedPackage, 'format');
   assertPackageScript(generatedPackage, 'format:check');
+
+  assertPackageScriptValue(generatedPackage, 'lint', /--max-warnings 0/);
+  assertPackageScriptValue(generatedPackage, 'test:coverage', /vitest run --coverage/);
+  assertPackageScriptValue(generatedPackage, 'coverage:changed', /check-changed-file-coverage\.js/);
 
   assertPackageDependency(generatedPackage, 'dependencies', 'react', /^\^19\./);
   assertPackageDependency(generatedPackage, 'dependencies', 'react-dom', /^\^19\./);
@@ -65,6 +74,7 @@ try {
   assertPackageDependency(generatedPackage, 'devDependencies', '@testing-library/jest-dom');
   assertPackageDependency(generatedPackage, 'devDependencies', '@testing-library/user-event');
   assertPackageDependency(generatedPackage, 'devDependencies', '@playwright/test');
+  assertPackageDependency(generatedPackage, 'devDependencies', '@vitest/coverage-v8', /^\^4\./);
   assertPackageDependency(generatedPackage, 'devDependencies', 'prettier');
 
   console.log('Generated project verification passed.');
@@ -107,6 +117,14 @@ function readJson(filePath) {
 function assertPackageScript(packageJson, scriptName) {
   if (!packageJson.scripts || !packageJson.scripts[scriptName]) {
     throw new Error(`Expected package script missing: ${scriptName}`);
+  }
+}
+
+function assertPackageScriptValue(packageJson, scriptName, valuePattern) {
+  const value = packageJson.scripts?.[scriptName];
+
+  if (!valuePattern.test(value)) {
+    throw new Error(`Expected package script ${scriptName} to match ${valuePattern}, found ${value}`);
   }
 }
 

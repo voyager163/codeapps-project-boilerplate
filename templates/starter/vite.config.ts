@@ -13,6 +13,16 @@ export default defineConfig({
     },
   },
   test: {
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary", "json"],
+      thresholds: {
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80,
+      },
+    },
     environment: "jsdom",
     exclude: [...configDefaults.exclude, "e2e/**"],
     environmentOptions: {

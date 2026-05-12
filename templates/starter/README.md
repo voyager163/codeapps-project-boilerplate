@@ -28,10 +28,14 @@ Designed for common app scenarios, easy extensibility, and minimal setup.
 
 ## Quality scripts
 
-- `npm run lint` - run ESLint
+- `npm run lint` - run ESLint with zero warnings allowed
 - `npm run format:check` - check Prettier formatting
 - `npm run test:run` - run Vitest unit tests once
+- `npm run test:coverage` - run Vitest once with v8 coverage and 80 percent overall thresholds
+- `npm run coverage:changed` - check changed source files against the 80 percent line coverage gate
 - `npm run e2e` - run Playwright browser tests
+
+Generated projects include GitHub Actions workflows under `.github/workflows/` for GHAS CodeQL and Dependency Review checks, free quality checks, Semgrep OSS, npm audit, and OpenSSF Scorecard. Enable Secret Scanning and Push Protection in GitHub Settings > Code security; these GHAS features are repository settings and are not configured in workflow YAML. Container scanning is not included because this starter does not use containers.
 
 Before running Playwright tests for the first time, install the browser binaries:
 
