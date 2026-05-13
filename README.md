@@ -58,6 +58,16 @@ cd my-app
 code .
 ```
 
+If macOS reports an `EACCES` permission error while installing globally, configure npm to use a user-writable global package folder, then retry the install:
+
+```bash
+mkdir -p ~/.npm-global
+npm config set prefix ~/.npm-global
+echo 'export PATH="$HOME/.npm-global/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+npm install -g @voyager163/codespec@latest
+```
+
 To create a project without a global install, run:
 
 ```bash
