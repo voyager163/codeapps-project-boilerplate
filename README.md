@@ -53,7 +53,7 @@ The goal is practical spec-driven development for Code Apps. CodeSpec uses OpenS
 
 ```bash
 npm install -g @voyager163/codespec@latest
-codespec my-app
+codespec init my-app
 cd my-app
 code .
 ```
@@ -71,7 +71,7 @@ npm install -g @voyager163/codespec@latest
 To create a project without a global install, run:
 
 ```bash
-npx @voyager163/codespec my-app
+npx @voyager163/codespec init my-app
 ```
 
 Initialize the Power Apps code app for your target environment:
@@ -165,7 +165,7 @@ When CodeSpec runs OpenSpec on a developer's behalf, it sets `OPENSPEC_TELEMETRY
 The initializer runs this setup flow:
 
 ```text
-1. Ask for a project name if missing
+1. Run through the `init` subcommand and ask for a project name if missing
 2. Check Node.js
 3. Check npm
 4. Check git
@@ -254,11 +254,13 @@ Follow these rules when building Code Apps from the generated project.
 ## CLI Options
 
 ```bash
-codespec my-app --skip-install
-codespec my-app --skip-git
+codespec init my-app --skip-install
+codespec init my-app --skip-git
 ```
 
 By default, `npm install` and `git init` both run automatically.
+
+Project creation requires the explicit `init` subcommand. Running `codespec my-app` directly is rejected so root-level commands can remain unambiguous.
 
 The CLI fails if the target folder already exists. This avoids accidental overwrites.
 

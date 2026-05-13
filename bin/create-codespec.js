@@ -12,6 +12,8 @@ const openspecPackage = '@fission-ai/openspec@latest';
 const openspecTelemetryOptOutEnv = {
   OPENSPEC_TELEMETRY: '0',
 };
+const initCommand = 'init';
+const reservedCommands = new Set(['doctor', 'check', 'verify', 'repair', 'version']);
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
@@ -47,15 +49,44 @@ async function main() {
 
 function parseArgs(args) {
   const options = {
+    command: '',
     help: false,
     projectName: '',
     skipInstall: false,
     skipGit: false,
   };
 
-  for (const arg of args) {
+  if (args.length === 0) {
+    options.help = true;
+    return options;
+  }
+
+  const [command, ...commandArgs] = args;
+
+  if (command === '--help' || command === '-h' || command === 'help') {
+    options.help = true;
+    return options;
+  }
+
+  if (command !== initCommand) {
+    if (reservedCommands.has(command)) {
+      throw new Error(`Command not implemented yet: ${command}`);
+    }
+
+    if (command.startsWith('-')) {
+      throw new Error(`Unknown option: ${command}`);
+    }
+
+    throw new Error(`Project creation now requires the init command. Use: ${commandName} init ${command}`);
+  }
+
+  options.command = command;
+
+  for (const arg of commandArgs) {
     if (arg === '--help' || arg === '-h') {
       options.help = true;
+    } else if (arg === '--here') {
+      throw new Error(`Current-folder initialization is not supported yet. Use: ${commandName} init <project-name>`);
     } else if (arg === '--skip-install') {
       options.skipInstall = true;
     } else if (arg === '--skip-git') {
@@ -73,9 +104,13 @@ function parseArgs(args) {
 }
 
 function printHelp() {
-  console.log(`Usage: ${commandName} [project-name] [options]\n`);
+  console.log(`Usage: ${commandName} <command> [options]\n`);
+  console.log(`Project creation: ${commandName} init <project-name> [options]\n`);
   console.log('Install: npm install -g @voyager163/codespec@latest');
-  console.log('Run without installing: npx @voyager163/codespec [project-name] [options]\n');
+  console.log('Run without installing: npx @voyager163/codespec init <project-name> [options]\n');
+  console.log('Commands:');
+  console.log('  init <project-name>   Create a new CodeSpec project');
+  console.log('');
   console.log('Options:');
   console.log('  --skip-install   Create the project without running npm install');
   console.log('  --skip-git       Create the project without running git init');
@@ -105,8 +140,12 @@ function validateProjectName(projectName) {
     throw new Error('Project name must be a folder name, not a path.');
   }
 
-  if (projectName === '.' || projectName === '..') {
-    throw new Error('Project name cannot be . or ...');
+  if (projectName === '.') {
+    throw new Error(`Current-folder initialization is not supported yet. Use: ${commandName} init <project-name>`);
+  }
+
+  if (projectName === '..') {
+    throw new Error('Project name cannot be ...');
   }
 }
 

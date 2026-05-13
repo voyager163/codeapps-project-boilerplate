@@ -11,14 +11,45 @@ const tempBin = path.join(tempRoot, 'bin');
 const fakeOpenSpecLogPath = path.join(tempRoot, 'openspec-invocations.jsonl');
 const projectName = 'verify-app';
 const projectPath = path.join(tempRoot, projectName);
+const cliPath = path.join(repoRoot, 'bin', 'create-codespec.js');
 const openspecTelemetryGuardrail = 'OPENSPEC_TELEMETRY=0';
 
 try {
   createFakeOpenSpecCli(tempBin, fakeOpenSpecLogPath);
 
+  const rootHelp = runAndCapture('node', [cliPath], tempRoot);
+  assertOutputContains(rootHelp.stdout, 'Project creation: codespec init <project-name> [options]');
+  assertOutputExcludes(rootHelp.stdout, 'Project name:');
+
+  assertCommandFails(
+    'node',
+    [cliPath, 'shorthand-app', '--skip-install', '--skip-git'],
+    tempRoot,
+    {},
+    /Project creation now requires the init command\. Use: codespec init shorthand-app/
+  );
+  assertPathMissing(path.join(tempRoot, 'shorthand-app'));
+
+  assertCommandFails(
+    'node',
+    [cliPath, 'init', '.'],
+    tempRoot,
+    {},
+    /Current-folder initialization is not supported yet\. Use: codespec init <project-name>/
+  );
+  assertCommandFails(
+    'node',
+    [cliPath, 'init', '--here'],
+    tempRoot,
+    {},
+    /Current-folder initialization is not supported yet\. Use: codespec init <project-name>/
+  );
+  assertPathMissing(path.join(tempRoot, 'package.json'));
+  assertPathMissing(path.join(tempRoot, 'openspec'));
+
   run(
     'node',
-    [path.join(repoRoot, 'bin', 'create-codespec.js'), projectName, '--skip-install', '--skip-git'],
+    [cliPath, 'init', projectName, '--skip-install', '--skip-git'],
     tempRoot,
     {
       CODESPEC_FAKE_OPENSPEC_LOG: fakeOpenSpecLogPath,
@@ -117,6 +148,51 @@ function run(command, args, cwd, env = {}) {
   }
 }
 
+function runAndCapture(command, args, cwd, env = {}) {
+  const result = childProcess.spawnSync(command, args, {
+    cwd,
+    env: { ...process.env, ...env },
+    encoding: 'utf8',
+    input: '',
+    shell: process.platform === 'win32',
+    timeout: 5000,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    throw new Error(`Expected command to pass: ${command} ${args.join(' ')}\n${result.stderr || result.stdout}`);
+  }
+
+  return result;
+}
+
+function assertCommandFails(command, args, cwd, env = {}, messagePattern) {
+  const result = childProcess.spawnSync(command, args, {
+    cwd,
+    env: { ...process.env, ...env },
+    encoding: 'utf8',
+    input: '',
+    shell: process.platform === 'win32',
+    timeout: 5000,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status === 0) {
+    throw new Error(`Expected command to fail: ${command} ${args.join(' ')}`);
+  }
+
+  const output = `${result.stdout || ''}${result.stderr || ''}`;
+  if (!messagePattern.test(output)) {
+    throw new Error(`Expected failure output to match ${messagePattern}, found:\n${output}`);
+  }
+}
+
 function createFakeOpenSpecCli(binPath, logPath) {
   fs.mkdirSync(binPath, { recursive: true });
 
@@ -191,6 +267,24 @@ function assertFile(filePath) {
 function assertDirectory(directoryPath) {
   if (!fs.existsSync(directoryPath) || !fs.statSync(directoryPath).isDirectory()) {
     throw new Error(`Expected directory missing: ${directoryPath}`);
+  }
+}
+
+function assertPathMissing(entryPath) {
+  if (fs.existsSync(entryPath)) {
+    throw new Error(`Expected path to be absent: ${entryPath}`);
+  }
+}
+
+function assertOutputContains(output, expectedText) {
+  if (!output.includes(expectedText)) {
+    throw new Error(`Expected output to include ${expectedText}.`);
+  }
+}
+
+function assertOutputExcludes(output, unexpectedText) {
+  if (output.includes(unexpectedText)) {
+    throw new Error(`Expected output not to include ${unexpectedText}.`);
   }
 }
 
