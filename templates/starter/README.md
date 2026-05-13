@@ -26,6 +26,18 @@ Designed for common app scenarios, easy extensibility, and minimal setup.
 - [Tanstack Table](https://tanstack.com/table/latest) - interactive tables, datagrids
 - [Lucide](https://lucide.dev/) - icons
 
+## Power Apps initialization
+
+If CodeSpec guided you through Power Apps initialization, the project has already run `pac code init` for the selected environment and app display name.
+
+If you skipped that step or are using this starter directly, initialize the Code App from the project folder:
+
+```bash
+pac code init --environment <environmentId> --displayName <appDisplayName>
+```
+
+The environment ID selects the target Power Platform environment. The display name is the friendly app name shown in Power Apps.
+
 ## Quality scripts
 
 - `npm run lint` - run ESLint with zero warnings allowed

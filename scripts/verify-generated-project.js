@@ -9,16 +9,26 @@ const repoRoot = path.resolve(__dirname, '..');
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'codespec-'));
 const tempBin = path.join(tempRoot, 'bin');
 const fakeOpenSpecLogPath = path.join(tempRoot, 'openspec-invocations.jsonl');
+const fakePacLogPath = path.join(tempRoot, 'pac-invocations.jsonl');
 const projectName = 'verify-app';
+const skippedPacProjectName = 'skip-pac-app';
+const missingPacProjectName = 'missing-pac-app';
 const projectPath = path.join(tempRoot, projectName);
+const skippedPacProjectPath = path.join(tempRoot, skippedPacProjectName);
+const missingPacProjectPath = path.join(tempRoot, missingPacProjectName);
 const cliPath = path.join(repoRoot, 'bin', 'create-codespec.js');
 const openspecTelemetryGuardrail = 'OPENSPEC_TELEMETRY=0';
+const fakeCliPath = `${tempBin}${path.delimiter}${process.env.PATH}`;
+const fakeEnvironmentId = '00000000-0000-0000-0000-000000000001';
+const fakeAppDisplayName = 'Expense Review';
 
 try {
   createFakeOpenSpecCli(tempBin, fakeOpenSpecLogPath);
+  createUnavailableFakePacCli(tempBin);
 
   const rootHelp = runAndCapture('node', [cliPath], tempRoot);
   assertOutputContains(rootHelp.stdout, 'Project creation: codespec init <project-name> [options]');
+  assertOutputContains(rootHelp.stdout, '--skip-pac-init');
   assertOutputExcludes(rootHelp.stdout, 'Project name:');
 
   assertCommandFails(
@@ -47,17 +57,57 @@ try {
   assertPathMissing(path.join(tempRoot, 'package.json'));
   assertPathMissing(path.join(tempRoot, 'openspec'));
 
-  run(
+  assertCommandFails(
+    'node',
+    [cliPath, 'init', missingPacProjectName, '--skip-install', '--skip-git'],
+    tempRoot,
+    {
+      CODESPEC_FAKE_OPENSPEC_LOG: fakeOpenSpecLogPath,
+      PATH: fakeCliPath,
+    },
+    /Power Platform CLI not found: pac/
+  );
+  assertPathMissing(missingPacProjectPath);
+
+  const skippedPacOutput = runAndCapture(
+    'node',
+    [cliPath, 'init', skippedPacProjectName, '--skip-install', '--skip-git', '--skip-pac-init'],
+    tempRoot,
+    {
+      CODESPEC_FAKE_OPENSPEC_LOG: fakeOpenSpecLogPath,
+      PATH: fakeCliPath,
+    }
+  );
+
+  assertOutputContains(skippedPacOutput.stdout, 'Initialize CodeSpec Project');
+  assertOutputContains(skippedPacOutput.stdout, '|-- Check required tools');
+  assertOutputContains(skippedPacOutput.stdout, '|   |-- [skip] Check Power Platform CLI');
+  assertOutputContains(skippedPacOutput.stdout, '|   |-- [skip] Run guided pac code init');
+  assertOutputContains(skippedPacOutput.stdout, '3. pac code init --environment <environmentId> --displayName <appDisplayName>');
+  assertFile(path.join(skippedPacProjectPath, 'package.json'));
+
+  createFakePacCli(tempBin, fakePacLogPath);
+
+  const guidedPacInput = `\n${fakeEnvironmentId}\n${fakeAppDisplayName}\n\n`;
+  const guidedPacOutput = runAndCapture(
     'node',
     [cliPath, 'init', projectName, '--skip-install', '--skip-git'],
     tempRoot,
     {
       CODESPEC_FAKE_OPENSPEC_LOG: fakeOpenSpecLogPath,
       PATH: `${tempBin}${path.delimiter}${process.env.PATH}`,
-    }
+    },
+    guidedPacInput
   );
 
+  assertOutputContains(guidedPacOutput.stdout, '|   |-- [ok] Check Power Platform CLI');
+  assertOutputContains(guidedPacOutput.stdout, 'Power Apps Code App setup');
+  assertOutputContains(guidedPacOutput.stdout, `pac code init --environment ${fakeEnvironmentId} --displayName "${fakeAppDisplayName}"`);
+  assertOutputContains(guidedPacOutput.stdout, '|   |-- [ok] Run pac code init');
+  assertOutputContains(guidedPacOutput.stdout, '3. Use /opsx:explore, /opsx:propose, and /opsx:apply with GitHub Copilot');
+
   assertFakeOpenSpecInvocations(fakeOpenSpecLogPath);
+  assertFakePacInvocations(fakePacLogPath, projectPath, fakeEnvironmentId, fakeAppDisplayName);
 
   assertFile(path.join(projectPath, 'package.json'));
   assertFile(path.join(projectPath, 'openspec', 'config.yaml'));
@@ -148,12 +198,12 @@ function run(command, args, cwd, env = {}) {
   }
 }
 
-function runAndCapture(command, args, cwd, env = {}) {
+function runAndCapture(command, args, cwd, env = {}, input = '') {
   const result = childProcess.spawnSync(command, args, {
     cwd,
     env: { ...process.env, ...env },
     encoding: 'utf8',
-    input: '',
+    input,
     shell: process.platform === 'win32',
     timeout: 5000,
   });
@@ -236,6 +286,56 @@ process.exit(1);
 `);
 }
 
+function createFakePacCli(binPath, logPath) {
+  fs.mkdirSync(binPath, { recursive: true });
+
+  const executablePath = path.join(binPath, process.platform === 'win32' ? 'pac.cmd' : 'pac');
+  const script = process.platform === 'win32'
+    ? `@echo off\nnode "%~dp0\\pac.js" %*\n`
+    : `#!/usr/bin/env node\nrequire('./pac.js');\n`;
+
+  fs.writeFileSync(executablePath, script);
+
+  if (process.platform !== 'win32') {
+    fs.chmodSync(executablePath, 0o755);
+  }
+
+  fs.writeFileSync(path.join(binPath, 'pac.js'), `
+const fs = require('node:fs');
+
+const logPath = process.env.CODESPEC_FAKE_PAC_LOG || ${JSON.stringify(logPath)};
+const args = process.argv.slice(2);
+fs.appendFileSync(logPath, JSON.stringify({ args, cwd: process.cwd() }) + '\\n');
+
+if (args[0] === '--version') {
+  console.log('pac 0.0.0-test');
+  process.exit(0);
+}
+
+if (args[0] === 'code' && args[1] === 'init') {
+  process.exit(0);
+}
+
+console.error('Unexpected fake pac command: ' + args.join(' '));
+process.exit(1);
+`);
+}
+
+function createUnavailableFakePacCli(binPath) {
+  fs.mkdirSync(binPath, { recursive: true });
+
+  const executablePath = path.join(binPath, process.platform === 'win32' ? 'pac.cmd' : 'pac');
+  const script = process.platform === 'win32'
+    ? '@echo off\nexit /b 127\n'
+    : '#!/bin/sh\nexit 127\n';
+
+  fs.writeFileSync(executablePath, script);
+
+  if (process.platform !== 'win32') {
+    fs.chmodSync(executablePath, 0o755);
+  }
+}
+
 function assertFakeOpenSpecInvocations(logPath) {
   const invocations = fs.readFileSync(logPath, 'utf8')
     .trim()
@@ -255,6 +355,34 @@ function assertFakeOpenSpecInvocations(logPath) {
     if (entry.telemetry !== '0') {
       throw new Error(`Expected OPENSPEC_TELEMETRY=0 for openspec ${entry.args.join(' ')}`);
     }
+  }
+}
+
+function assertFakePacInvocations(logPath, expectedCwd, expectedEnvironmentId, expectedDisplayName) {
+  const invocations = fs.readFileSync(logPath, 'utf8')
+    .trim()
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+
+  if (!invocations.some((entry) => entry.args[0] === '--version')) {
+    throw new Error('Expected generated project verification to check Power Platform CLI availability.');
+  }
+
+  const codeInitInvocation = invocations.find((entry) => entry.args[0] === 'code' && entry.args[1] === 'init');
+  if (!codeInitInvocation) {
+    throw new Error('Expected generated project verification to run pac code init.');
+  }
+
+  const expectedArgs = ['code', 'init', '--environment', expectedEnvironmentId, '--displayName', expectedDisplayName];
+  if (JSON.stringify(codeInitInvocation.args) !== JSON.stringify(expectedArgs)) {
+    throw new Error(`Expected pac args ${expectedArgs.join(' ')}, found ${codeInitInvocation.args.join(' ')}`);
+  }
+
+  const actualCwd = fs.realpathSync(codeInitInvocation.cwd);
+  const normalizedExpectedCwd = fs.realpathSync(expectedCwd);
+  if (actualCwd !== normalizedExpectedCwd) {
+    throw new Error(`Expected pac code init to run in ${normalizedExpectedCwd}, found ${actualCwd}`);
   }
 }
 
