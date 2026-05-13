@@ -1,0 +1,1 @@
+../../../templates/github/skills/codeapp-deploy/SKILL.md

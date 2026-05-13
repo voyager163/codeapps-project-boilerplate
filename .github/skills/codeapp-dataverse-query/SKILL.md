@@ -1,0 +1,1 @@
+../../../templates/github/skills/codeapp-dataverse-query/SKILL.md
