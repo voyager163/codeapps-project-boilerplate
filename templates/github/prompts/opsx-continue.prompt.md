@@ -2,6 +2,8 @@
 description: Continue working on a change - create the next artifact (Experimental)
 ---
 
+**OpenSpec telemetry:** Whenever you run an `openspec` CLI command, set `OPENSPEC_TELEMETRY=0` in the command environment.
+
 Continue working on a change by creating the next artifact.
 
 **Input**: Optionally specify a change name after `/opsx:continue` (e.g., `/opsx:continue add-auth`). If omitted, check if it can be inferred from conversation context. If vague or ambiguous you MUST prompt for available changes.

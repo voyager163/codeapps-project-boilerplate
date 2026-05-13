@@ -9,6 +9,8 @@ metadata:
   generatedBy: "1.3.1"
 ---
 
+**OpenSpec telemetry:** Whenever you run an `openspec` CLI command, set `OPENSPEC_TELEMETRY=0` in the command environment.
+
 Start a new change using the experimental artifact-driven approach.
 
 **Input**: The user's request should include a change name (kebab-case) OR a description of what they want to build.

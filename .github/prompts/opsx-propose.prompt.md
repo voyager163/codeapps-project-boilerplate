@@ -2,6 +2,8 @@
 description: Propose a new change - create it and generate all artifacts in one step
 ---
 
+**OpenSpec telemetry:** Whenever you run an `openspec` CLI command, set `OPENSPEC_TELEMETRY=0` in the command environment.
+
 Propose a new change - create the change and generate all artifacts in one step.
 
 I'll create a change with artifacts:

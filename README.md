@@ -148,6 +148,8 @@ If OpenSpec is missing, the initializer installs it automatically:
 npm install -g @fission-ai/openspec@latest
 ```
 
+When CodeSpec runs OpenSpec on a developer's behalf, it sets `OPENSPEC_TELEMETRY=0` for OpenSpec availability checks, automatic OpenSpec installation, and generated-project OpenSpec setup. Generated OPSX prompts and skills also instruct agents to use the same opt-out when they run OpenSpec CLI commands.
+
 ## What The CLI Does
 
 The initializer runs this setup flow:
@@ -208,6 +210,8 @@ Deploy: pac CLI
 ## OPSX Workflow
 
 Use the expanded OpenSpec workflow commands as the normal development path. Generated projects include all 11 OPSX prompt files and all 11 matching OpenSpec skill folders by default.
+
+Generated OPSX workflow instructions require agents to run OpenSpec CLI commands with `OPENSPEC_TELEMETRY=0` in the command environment.
 
 | Command | Purpose |
 | --- | --- |

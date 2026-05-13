@@ -9,6 +9,9 @@ const readline = require('node:readline');
 const commandName = 'codespec';
 const minNodeVersion = [20, 19, 0];
 const openspecPackage = '@fission-ai/openspec@latest';
+const openspecTelemetryOptOutEnv = {
+  OPENSPEC_TELEMETRY: '0',
+};
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
@@ -148,8 +151,9 @@ function requireCommand(command) {
   }
 }
 
-function commandExists(command) {
+function commandExists(command, options = {}) {
   const result = childProcess.spawnSync(command, ['--version'], {
+    env: mergeEnv(options.env),
     stdio: 'ignore',
     shell: process.platform === 'win32',
   });
@@ -158,14 +162,14 @@ function commandExists(command) {
 }
 
 function ensureOpenSpec() {
-  if (commandExists('openspec')) {
+  if (commandExists('openspec', { env: openspecTelemetryOptOutEnv })) {
     return;
   }
 
   console.log(`OpenSpec not found. Installing ${openspecPackage} globally...`);
-  runCommand('npm', ['install', '-g', openspecPackage]);
+  runCommand('npm', ['install', '-g', openspecPackage], { env: openspecTelemetryOptOutEnv });
 
-  if (!commandExists('openspec')) {
+  if (!commandExists('openspec', { env: openspecTelemetryOptOutEnv })) {
     throw new Error(`OpenSpec installation finished but openspec is still unavailable. Try manually running: npm install -g ${openspecPackage}`);
   }
 }
@@ -234,11 +238,11 @@ function installDependencies(targetPath, options) {
 function setupOpenSpec(targetPath) {
   const openspecPath = path.join(targetPath, 'openspec');
   if (fs.existsSync(openspecPath)) {
-    runCommand('openspec', ['update', '--force'], { cwd: targetPath });
+    runCommand('openspec', ['update', '--force'], { cwd: targetPath, env: openspecTelemetryOptOutEnv });
     return;
   }
 
-  runCommand('openspec', ['init', '--tools', 'github-copilot', '--force'], { cwd: targetPath });
+  runCommand('openspec', ['init', '--tools', 'github-copilot', '--force'], { cwd: targetPath, env: openspecTelemetryOptOutEnv });
 }
 
 function applyOpenSpecConfig(templateRoot, targetPath) {
@@ -261,6 +265,7 @@ function initializeGit(targetPath, options) {
 function runCommand(command, args, options = {}) {
   const result = childProcess.spawnSync(command, args, {
     cwd: options.cwd || process.cwd(),
+    env: mergeEnv(options.env),
     stdio: 'inherit',
     shell: process.platform === 'win32',
   });
@@ -272,6 +277,10 @@ function runCommand(command, args, options = {}) {
   if (result.status !== 0) {
     throw new Error(`Command failed: ${command} ${args.join(' ')}`);
   }
+}
+
+function mergeEnv(env) {
+  return env ? { ...process.env, ...env } : process.env;
 }
 
 function assertDirectory(directoryPath, message) {

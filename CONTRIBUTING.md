@@ -42,6 +42,8 @@ If OpenSpec is not available locally, install it with:
 npm install -g @fission-ai/openspec@latest
 ```
 
+When CodeSpec runs OpenSpec during project creation, it sets `OPENSPEC_TELEMETRY=0` for upstream OpenSpec commands. When updating OPSX prompts or skills, keep the generated and repository-local guidance aligned so agent-run OpenSpec commands use the same opt-out.
+
 ## Development Workflow
 
 1. Create a branch for your change.
