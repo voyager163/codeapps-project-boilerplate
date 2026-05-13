@@ -1,6 +1,6 @@
 {
   "name": "@voyager163/codespec",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Create a Power Apps Code Apps project prepared for OpenSpec workflows.",
   "license": "MIT",
   "bin": {
