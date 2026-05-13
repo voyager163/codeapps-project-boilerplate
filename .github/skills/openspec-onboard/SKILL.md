@@ -9,6 +9,8 @@ metadata:
   generatedBy: "1.3.1"
 ---
 
+**OpenSpec telemetry:** Whenever you run an `openspec` CLI command, set `OPENSPEC_TELEMETRY=0` in the command environment.
+
 Guide the user through their first complete OpenSpec workflow cycle. This is a teaching experience—you'll do real work in their codebase while explaining each step.
 
 ---
