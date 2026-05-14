@@ -53,10 +53,12 @@ The goal is practical spec-driven development for Code Apps. CodeSpec uses OpenS
 
 ```bash
 npm install -g @voyager163/codespec@latest
-codespec my-app
+codespec init my-app
 cd my-app
 code .
 ```
+
+During initialization, CodeSpec checks for the Power Platform CLI and guides you through `pac code init`. Before prompting for values, it asks you to find your Power Platform environment ID and app display name, then waits for Enter.
 
 If macOS reports an `EACCES` permission error while installing globally, configure npm to use a user-writable global package folder, then retry the install:
 
@@ -71,10 +73,20 @@ npm install -g @voyager163/codespec@latest
 To create a project without a global install, run:
 
 ```bash
-npx @voyager163/codespec my-app
+npx @voyager163/codespec init my-app
 ```
 
-Initialize the Power Apps code app for your target environment:
+To create the local project first and initialize Power Apps later, skip the guided PAC step:
+
+```bash
+codespec init my-app --skip-pac-init
+cd my-app
+pac code init --environment <environmentId> --displayName <appDisplayName>
+```
+
+The environment ID selects the target Power Platform environment. The display name is the friendly app name shown in Power Apps.
+
+If you skipped initialization or declined the prompt, run the command later from the generated project folder:
 
 ```bash
 pac code init --environment <environmentId> --displayName <appDisplayName>
@@ -148,7 +160,7 @@ One repo setting must be enabled manually: go to Settings > Code security and tu
 - Node.js 20.19.0 or newer
 - npm
 - git
-- Power Platform CLI for `pac code init`
+- Power Platform CLI for guided `pac code init`, unless running with `--skip-pac-init`
 - Visual Studio Code with GitHub Copilot
 - OpenSpec
 
@@ -165,22 +177,24 @@ When CodeSpec runs OpenSpec on a developer's behalf, it sets `OPENSPEC_TELEMETRY
 The initializer runs this setup flow:
 
 ```text
-1. Ask for a project name if missing
+1. Run through the `init` subcommand and ask for a project name if missing
 2. Check Node.js
 3. Check npm
 4. Check git
-5. Check OpenSpec and install it if missing
-6. Fail if the target folder already exists
-7. Copy templates/starter into the target folder
-8. Copy the OPSX prompts and skills into .github/
-9. Run npm install
-10. Run openspec init or openspec update
-11. Replace openspec/config.yaml with the fixed Code Apps config
-12. Run git init
-13. Print next steps
+5. Check the Power Platform CLI unless Power Apps initialization is skipped
+6. Check OpenSpec and install it if missing
+7. Fail if the target folder already exists
+8. Copy templates/starter into the target folder
+9. Copy the OPSX prompts and skills into .github/
+10. Run npm install
+11. Run openspec init or openspec update
+12. Replace openspec/config.yaml with the fixed Code Apps config
+13. Run git init
+14. Guide `pac code init` unless skipped
+15. Print next steps
 ```
 
-The initializer does not install Code Apps assistant plugins, register plugin marketplaces, or ask developers to choose an AI assistant.
+The initializer prints setup progress as a grouped tree so completed, skipped, and failed steps are visible. It does not install the Power Platform CLI, authenticate to Power Platform, discover environments automatically, install Code Apps assistant plugins, register plugin marketplaces, or ask developers to choose an AI assistant.
 
 ## Generated Project
 
@@ -254,11 +268,14 @@ Follow these rules when building Code Apps from the generated project.
 ## CLI Options
 
 ```bash
-codespec my-app --skip-install
-codespec my-app --skip-git
+codespec init my-app --skip-install
+codespec init my-app --skip-git
+codespec init my-app --skip-pac-init
 ```
 
-By default, `npm install` and `git init` both run automatically.
+By default, `npm install`, `git init`, and guided Power Apps initialization run automatically. Use `--skip-pac-init` to create the local project without checking for `pac` or running `pac code init`.
+
+Project creation requires the explicit `init` subcommand. Running `codespec my-app` directly is rejected so root-level commands can remain unambiguous.
 
 The CLI fails if the target folder already exists. This avoids accidental overwrites.
 

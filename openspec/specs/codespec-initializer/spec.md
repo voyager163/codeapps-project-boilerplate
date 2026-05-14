@@ -6,7 +6,7 @@ Define the behavior of the CodeSpec initializer for creating Power Apps Code App
 
 ### Requirement: CodeSpec CLI Identity
 
-The initializer SHALL use `codespec` as the project identity, SHALL publish the npm package as `@voyager163/codespec`, and SHALL expose `codespec` as the primary executable command.
+The initializer SHALL use `codespec` as the project identity, SHALL publish the npm package as `@voyager163/codespec`, SHALL expose `codespec` as the primary executable command, and SHALL use `init` as the project creation subcommand.
 
 #### Scenario: Package metadata names CodeSpec initializer
 
@@ -16,12 +16,18 @@ Then the package name SHALL identify the initializer as `@voyager163/codespec`
 And the binary entries SHALL expose `codespec` as the primary command
 And they MAY expose `create-codespec` as a backwards-compatible bin alias.
 
-#### Scenario: Help output shows CodeSpec command
+#### Scenario: Help output shows CodeSpec init command
 
 Given the developer runs the initializer help command
 When usage information is printed
-Then it SHALL show `codespec [project-name] [options]`
+Then it SHALL show `codespec init <project-name> [options]` as the project creation command
 And it SHALL mention `npm install -g @voyager163/codespec@latest` as the global install command.
+
+#### Scenario: Root command shows command help
+
+- **WHEN** the developer runs `codespec` without a subcommand
+- **THEN** the initializer SHALL print command help
+- **AND** it SHALL NOT prompt for a project name.
 
 ### Requirement: CodeSpec Documentation Identity
 
@@ -48,35 +54,118 @@ And it SHALL identify OpenSpec as the current framework choice rather than an ir
 
 ### Requirement: Project Name Handling
 
-The initializer SHALL accept an optional project folder name as a positional argument.
+The initializer SHALL accept an optional project folder name only after the `init` subcommand.
 
-#### Scenario: Project name is provided
+#### Scenario: Project name is provided to init
 
-Given the developer runs `codespec my-app`
+Given the developer runs `codespec init my-app`
 When the initializer starts
 Then it SHALL use `my-app` as the target folder name
 And it SHALL not prompt for the project name.
 
-#### Scenario: Project name is omitted
+#### Scenario: Project name is omitted from init
 
-Given the developer runs `codespec`
+Given the developer runs `codespec init`
 When the initializer starts
 Then it SHALL prompt the developer for a project name
 And it SHALL use the provided value as the target folder name.
 
+#### Scenario: Root positional project name is rejected
+
+- **WHEN** the developer runs `codespec my-app`
+- **THEN** the initializer SHALL stop before creating project files
+- **AND** it SHALL print a clear message directing the developer to run `codespec init my-app`.
+
+### Requirement: Existing-Folder Init Reservation
+
+The initializer SHALL reserve existing-folder initialization command forms without modifying the current folder until a future change defines that behavior.
+
+#### Scenario: Current-folder init is requested
+
+- **WHEN** the developer runs `codespec init .`
+- **THEN** the initializer SHALL stop before creating or modifying project files
+- **AND** it SHALL print a clear message that current-folder initialization is not supported yet.
+
+#### Scenario: Here init is requested
+
+- **WHEN** the developer runs `codespec init --here`
+- **THEN** the initializer SHALL stop before creating or modifying project files
+- **AND** it SHALL print a clear message that current-folder initialization is not supported yet.
+
+### Requirement: Structured Initialization Progress
+
+The initializer SHALL present project setup progress as a grouped initialization tree with visible status markers for completed, skipped, warning, and failed steps.
+
+#### Scenario: Setup progress is grouped by phase
+
+- **WHEN** the developer runs `codespec init my-app`
+- **THEN** the initializer SHALL group progress under phases for prerequisite checks, local project setup, Power Apps initialization, and finalization
+- **AND** each completed phase step SHALL show a completed status marker.
+
+#### Scenario: Optional Power Apps initialization is skipped
+
+- **WHEN** the developer skips Power Apps initialization
+- **THEN** the progress output SHALL mark the Power Apps initialization step as skipped
+- **AND** the final output SHALL still indicate that the local CodeSpec project is ready.
+
+### Requirement: Guided Power Apps Code App Initialization
+
+The initializer SHALL guide interactive developers through Power Apps Code App initialization after local project setup succeeds.
+
+#### Scenario: Developer prepares Power Apps values before prompts
+
+- **WHEN** the initializer reaches Power Apps initialization
+- **THEN** it SHALL tell the developer to find their Power Platform environment ID and app display name
+- **AND** it SHALL wait for the developer to press Enter before prompting for those values.
+
+#### Scenario: Developer provides Power Apps values
+
+- **WHEN** the developer enters a non-empty environment ID and app display name
+- **THEN** the initializer SHALL show the `pac code init --environment <environmentId> --displayName <appDisplayName>` command that will be run
+- **AND** it SHALL ask the developer to confirm before running the command.
+
+#### Scenario: Power Apps initialization command runs
+
+- **WHEN** the developer confirms Power Apps initialization
+- **THEN** the initializer SHALL run `pac code init --environment <environmentId> --displayName <appDisplayName>` inside the generated project folder
+- **AND** it SHALL report the Power Apps initialization step as completed when the command succeeds.
+
+#### Scenario: Power Apps values are blank
+
+- **WHEN** the developer submits a blank environment ID or app display name
+- **THEN** the initializer SHALL reject the blank value
+- **AND** it SHALL prompt again before attempting to run `pac code init`.
+
+#### Scenario: Developer skips guided Power Apps initialization
+
+- **WHEN** the developer chooses to skip Power Apps initialization
+- **THEN** the initializer SHALL NOT prompt for environment ID or app display name
+- **AND** it SHALL print the manual `pac code init --environment <environmentId> --displayName <appDisplayName>` command for later use.
+
+### Requirement: Power Apps Initialization Skip Option
+
+The initializer SHALL provide a command option that disables PAC CLI preflight and guided Power Apps initialization for local-only or automated project creation.
+
+#### Scenario: Skip option is provided
+
+- **WHEN** the developer runs `codespec init my-app --skip-pac-init`
+- **THEN** the initializer SHALL NOT require the Power Platform CLI to be installed
+- **AND** it SHALL NOT run `pac code init`
+- **AND** it SHALL print the manual `pac code init` command in the final next steps.
+
 ### Requirement: Required Tool Checks
 
-The initializer SHALL check that Node.js, npm, git, and OpenSpec are available before creating the project.
+The initializer SHALL check that Node.js, npm, git, OpenSpec, and the Power Platform CLI are available before creating the project when Power Apps initialization is enabled.
 
 #### Scenario: Required tools are present
 
-Given Node.js, npm, git, and OpenSpec are available
+Given Node.js, npm, git, OpenSpec, and the Power Platform CLI are available
 When the initializer performs prerequisite checks
 Then it SHALL continue to project creation.
 
 #### Scenario: OpenSpec is missing
 
-Given Node.js and npm are available
+Given Node.js, npm, git, and the Power Platform CLI are available
 And OpenSpec is not available
 When the initializer performs prerequisite checks
 Then it SHALL install OpenSpec automatically with npm
@@ -84,10 +173,17 @@ And it SHALL verify OpenSpec is available before continuing.
 
 #### Scenario: A non-installable required tool is missing
 
-Given Node.js, npm, or git is missing
-When the initializer performs prerequisite checks
+Given Node.js, npm, git, or the Power Platform CLI is missing
+When the initializer performs prerequisite checks with Power Apps initialization enabled
 Then it SHALL stop before creating the project
 And it SHALL print a clear message describing the missing tool.
+
+#### Scenario: Power Platform CLI check is skipped
+
+Given the developer has disabled Power Apps initialization for this run
+When the initializer performs prerequisite checks
+Then it SHALL NOT require the Power Platform CLI to be available
+And it SHALL continue with local project creation when the other required tools are available.
 
 ### Requirement: Target Folder Safety
 
@@ -96,7 +192,7 @@ The initializer SHALL avoid overwriting an existing target folder by default.
 #### Scenario: Target folder already exists
 
 Given a folder named `my-app` already exists
-When the developer runs `codespec my-app`
+When the developer runs `codespec init my-app`
 Then the initializer SHALL stop before copying files
 And it SHALL explain that the target folder already exists.
 
@@ -205,11 +301,20 @@ Then it SHALL run `git init` inside the target folder.
 
 ### Requirement: Next Steps Output
 
-The initializer SHALL print next steps after successful project creation.
+The initializer SHALL print next steps after successful project creation that reflect whether Power Apps initialization was completed or skipped.
 
-#### Scenario: Project setup succeeds
+#### Scenario: Project setup and Power Apps initialization succeed
 
 Given all setup steps complete successfully
+And Power Apps initialization completes successfully
+When the initializer finishes
+Then it SHALL print commands to enter the project folder, open it in VS Code, use OPSX commands, and start the dev server
+And it SHALL NOT present `pac code init` as an outstanding required step.
+
+#### Scenario: Project setup succeeds and Power Apps initialization is skipped
+
+Given local project setup completes successfully
+And Power Apps initialization is skipped
 When the initializer finishes
 Then it SHALL print commands to enter the project folder, open it in VS Code, run `pac code init`, use OPSX commands, and start the dev server.
 
