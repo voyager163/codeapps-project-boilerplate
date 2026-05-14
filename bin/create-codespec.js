@@ -49,6 +49,8 @@ async function main() {
   await progress.runStep('preflight', 'Check required tools', 'Validate target folder', () => ensureTargetAvailable(targetPath));
   await progress.runStep('local-project', 'Set up local project', 'Copy starter template', () => copyStarter(templateRoot, targetPath, projectName));
   await progress.runStep('local-project', 'Set up local project', 'Copy OpenSpec OPSX assets', () => copyGithubOverlay(templateRoot, targetPath));
+  await progress.runStep('local-project', 'Set up local project', 'Copy Claude Code skills', () => copyClaudeOverlay(templateRoot, targetPath));
+  await progress.runStep('local-project', 'Set up local project', 'Copy Power Platform skills', () => copyPowerPlatformOverlay(templateRoot, targetPath));
   await progress.runStep('local-project', 'Set up local project', 'Install npm dependencies', () => installDependencies(targetPath, options));
   await progress.runStep('local-project', 'Set up local project', 'Initialize OpenSpec', () => setupOpenSpec(targetPath));
   await progress.runStep('local-project', 'Set up local project', 'Apply Power Apps OpenSpec config', () => applyOpenSpecConfig(templateRoot, targetPath));
@@ -402,6 +404,30 @@ function copyGithubOverlay(templateRoot, targetPath) {
   });
 }
 
+function copyClaudeOverlay(templateRoot, targetPath) {
+  const claudeTemplatePath = path.join(templateRoot, 'claude');
+  assertDirectory(claudeTemplatePath, 'Claude Code template overlay is missing.');
+
+  const targetClaudePath = path.join(targetPath, '.claude');
+  fs.mkdirSync(targetClaudePath, { recursive: true });
+  fs.cpSync(claudeTemplatePath, targetClaudePath, {
+    recursive: true,
+    force: true,
+  });
+}
+
+function copyPowerPlatformOverlay(templateRoot, targetPath) {
+  const powerPlatformTemplatePath = path.join(templateRoot, 'powerplatform');
+  assertDirectory(powerPlatformTemplatePath, 'Power Platform skills template overlay is missing.');
+
+  const targetPowerPlatformPath = path.join(targetPath, '.powerplatform');
+  fs.mkdirSync(targetPowerPlatformPath, { recursive: true });
+  fs.cpSync(powerPlatformTemplatePath, targetPowerPlatformPath, {
+    recursive: true,
+    force: true,
+  });
+}
+
 function installDependencies(targetPath, options) {
   if (options.skipInstall) {
     return 'skipped';
@@ -595,7 +621,7 @@ function printNextSteps(projectName, powerAppsInitStatus) {
   }
 
   console.log('3. pac code init --environment <environmentId> --displayName <appDisplayName>');
-  console.log('4. Use /opsx:explore, /opsx:propose, and /opsx:apply with GitHub Copilot');
+  console.log('4. Use /opsx:explore, /opsx:propose, and /opsx:apply with GitHub Copilot or Claude Code');
   console.log('5. npm run dev');
 }
 
